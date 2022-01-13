@@ -1,0 +1,16 @@
+Page structures we are building on
+Pages with "???" are not finished yet
+
+Home_page
+    COLUMBIA | CUPM -> ???
+    About -> intro Page
+    Research Projects
+    Publications
+    Gallery
+    Learn More About the Project -> MainPage
+    Introduction(On-Chain Market Prediction)
+    Tutorial to Ethereum -> Tutorial
+
+    Columbia Link/Nondiscrimination etc -> no changes
+
+
