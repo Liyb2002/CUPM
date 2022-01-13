@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "truffle": "^5.4.26"
+  },
+  "name": "faucet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "mocha": "^8.1.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liyb2002/CSTFaucet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Liyb2002/CSTFaucet/issues"
+  },
+  "homepage": "https://github.com/Liyb2002/CSTFaucet#readme",
+  "description": ""
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <h1>CST Token Faucet</h1>
+</head>
+
+<body>
+    <h2>Rules</h2>
+    <p>First time users can claim 1000 CST tokens</p>
+    <p>Users can receive a bonus claim every 24 hours, in each bonus claim user can claim 100 CST tokens</p>
+    <p>Users can only claim 1 CST token if not in the bonus claim</p>
+
+    <br></br>
+<p>token in faucet is {{FaucetRemain}}</p>
+<p>token in address 0x830219365648553C0972543B7ace77403c8E0E26 is {{UserAmount}}</p>
+<p>next bonus claim in {{BonusHour}} hours {{BonusMinute}} minutes {{BonusSecond}} seconds. {{isClaimed}}</p>
+
+
+<form action='ClaimToken' method='GET'>
+    <button type='submit'> Claim Token</button>
+ </form>
+
+ 
+</div>
+</body>
+
+</html>
