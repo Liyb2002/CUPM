@@ -19,7 +19,7 @@ w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 #Create Faucet Contract Instance
 f = open(os.path.join(settings.BASE_DIR, 'app/abi.json'))
 ABI = json.load(f)
-contract_address='0xc3CD1fE9b0848fF9929F1e2b1879f255231cc89F'
+contract_address='0x6552E15536c3C90c047B1ca791A2cf39400B4F16'
 Faucet_instance = w3.eth.contract(contract_address, abi=ABI)
 
 #Create CST Contract Instance
