@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+{% endblock %}
+
+{% block content %}
+<body class="w3-content" style="max-width:1300px">
+
+    <table id="gameTable" class="display">
+        <thead>
+            <tr>
+                <th> Markets </th>
+                <th> End Date </th>
+                <th> Status </th>
+                <th> Your Trades </th>
+                <th> Popularity (# of trades) </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for g in game_list %} 
+            <tr>
+                <td><li><a href="./{{g.0}}" method="get">{{ g.1 }}</a></li></td>
+                <td>{{ g.2 }}</td>
+                <td>{{ g.3 }}</td>
+                <td>{{ g.4 }}</td>
+                <td>{{ g.5 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#gameTable').dataTable();
+});
+</script>
+
+{% endblock %}

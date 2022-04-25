@@ -1,0 +1,770 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+<style>
+
+@media(min-width:568px) {
+    .end {
+        margin-left: auto
+    }
+}
+
+@media(max-width:768px) {
+    #post {
+        width: 100%
+    }
+}
+
+#clicked {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    text-align: center;
+    width: 100%;
+    background-color: #ecb21f;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: black;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 13px
+}
+
+#profile {
+    background-color: unset
+}
+
+#post {
+    margin: 10px;
+    padding: 6px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: center;
+    background-color: #ecb21f;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: black;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 13px;
+    width: 50%
+}
+
+#nav-items li a,
+#profile {
+    text-decoration: none;
+    color: rgb(224, 219, 219);
+    background-color: black
+}
+
+.comments {
+    margin-top: 5%;
+    margin-left: 20px
+}
+
+.darker {
+    border: 1px solid #ecb21f;
+    background-color: black;
+    float: right;
+    border-radius: 5px;
+    padding-left: 40px;
+    padding-right: 30px;
+    padding-top: 10px
+}
+
+.comment {
+    float: left;
+    border-radius: 5px;
+    padding-left: 40px;
+    padding-right: 30px;
+    padding-top: 10px
+}
+
+.comment h4,
+.comment span,
+.darker h4,
+.darker span {
+    display: inline
+}
+
+.comment p,
+.comment span,
+.darker p,
+.darker span {
+    color: rgb(184, 183, 183)
+}
+
+h1,
+h4 {
+    color: black;
+    font-weight: bold
+}
+
+label {
+    color: rgb(212, 208, 208)
+}
+
+#align-form {
+    margin-top: 20px
+}
+
+.form-group p a {
+    color: white
+}
+
+#checkbx {
+    background-color: white
+}
+
+#darker img {
+    margin-right: 15px;
+    position: static
+}
+
+.form-group input,
+.form-group textarea {
+    background-color: white;
+    border: 1px solid rgba(16, 46, 46, 1);
+    border-radius: 12px
+}
+
+.form-group-reply textarea {
+    background-color: white;
+    border: 1px solid rgba(16, 46, 46, 1);
+    border-radius: 6px
+}
+
+
+
+.reply-container {
+    width:100%;
+    border:1px solid #d3d3d3;
+}
+.reply-container div {
+    width:100%;
+}
+.reply-container .header {
+    background-color:#d3d3d3;
+    padding: 2px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.reply-container .content {
+    display: none;
+    padding : 5px;
+}
+
+
+#historical_price {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+<body class="w3-content">
+    <div class="w3-container">
+    <p> {{game.desciptin}}</p>
+    <p> Note, please do not make any action before the metamask transaction is done</p>
+        <div class="w3-half">
+            <div>Home Team: {{game.home}}</div>
+            <div>Away Team: {{game.away}}</div>
+            <div> <button onclick="get_allowance()"> Before Buying, click here </button> </div>
+            <div> <button onclick=" market_set_approval()"> Before Selling, click here </button> </div>
+        </div>
+
+        <div class="w3-half">
+            <div class="w3-padding-64">
+                <p> My account balance: {{balance}} CST Unit</p>
+                <p> My position on {{game.home}}: {{home_position}} shares</p>
+                <p> My position on {{game.away}}: {{away_position}} shares</p>
+                <span id="home_position">
+                <span id="away_position">
+            </div>
+        </div>
+
+        <div id="historical_price"></div>
+        <div> 
+        Current Price:
+            <p>{{game.home}}: <span id="home_price">Loading..</span></p>
+            <p>{{game.away}}: <span id="away_price">Loading..</span></p>
+        </div>
+
+    </div>
+
+    <p> </p>
+
+    <div class="w3-container">
+    {% if game.game_end %}
+        <p><div> Market is closed</div></p>
+        <p><div> {{winner}} wins</div></p>
+        <div> 
+        {% if history %}
+        <button onclick="redeem()"> claim my rewards </button>
+        {% endif %}
+        </div>
+    {% else %}
+        {% if user.is_authenticated %}
+            <div>
+            Submit following form to trade.
+                <form>
+                    {% csrf_token %}
+                    <select name="team">
+                        <option value="{{0}}">{{game.home}}</option>
+                        <option value="{{1}}">{{game.away}}</option>
+                    </select>
+                    {{form.as_p}}
+                </form>
+                <input type="hidden" id="game_id" name="game_id" value={{game.id}}>
+                <p id="demo_price"></p>
+                <button onclick="trade()"> trade </button> 
+            </div>
+        
+            {% if history %}
+                <div class="w3-padding-64">My trading history</div>
+                    <table style="width:40%">
+                    <tr>
+                        <th>Time</th>
+                        <th>Option</th>
+                        <th>Amount</th>
+                    </tr>
+                    {% for trade in history %}
+                        <tr>
+                            <td>{{trade.time}}</td>
+                            <td>{{trade.option}}</td>
+                            <td>{{trade.amount}}</td>
+                            <td>{{trade.team}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+            {% endif %}
+
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5 col-md-6 col-12 pb-4">
+                <h1>Comments</h1> <button onClick="window.location.reload();">Refresh</button>
+                {% for comment in comments %}
+                    <div class="comment mt-4 text-justify float-left"> <img src="https://i.imgur.com/yTFUilP.jpg" alt="" class="rounded-circle" width="40" height="40">
+                        <h4>{{ comment.name.first_name }}</h4> <span>- {{ comment.created_on }} </span> <br>
+                        <p>{{ comment.body }}</p>
+                        {% if user in comment.likes.all %}
+                        <a href ="{% url 'cancel_like_comment' game.id comment.id %}" class ="btn btn-primary btn-sm"> {{ comment.likes.all|length }} Agreed</a>
+                        <a href ="{% url 'dislike_comment' game.id comment.id %}" class ="btn btn-secondary btn-sm"> {{ comment.dislikes.all|length }} Disagree!</a>
+
+                        {% elif user in comment.dislikes.all %}
+                        <a href ="{% url 'like_comment' game.id comment.id %}" class ="btn btn-primary btn-sm">{{ comment.likes.all|length }} Agree!</a>
+                        <a href ="{% url 'cancel_dislike_comment' game.id comment.id %}" class ="btn btn-secondary btn-sm"> {{ comment.dislikes.all|length }} Disagreed</a>
+
+                        {% else %}
+                        <a href ="{% url 'like_comment' game.id comment.id %}" class ="btn btn-primary btn-sm">{{ comment.likes.all|length }} Agree!</a>
+                        <a href ="{% url 'dislike_comment' game.id comment.id %}" class ="btn btn-secondary btn-sm"> {{ comment.dislikes.all|length }} Disagree!</a>
+
+                        {% endif %}
+                        <div class="reply-container">
+                            <div class="header">
+                                <span>show replies</span>
+                            </div>
+                            <div class="content">
+                                <ul>
+                                    {% for reply in comment.replies.all %}
+                                        <li> {{ reply.body }} -- {{ reply.name.first_name }} </li>
+                                    {% endfor %}
+                                
+                            
+                            <li>
+                            <form action="./{{game.id}}/{{comment.id}}/reply" method="post" id="algin-form">
+                            <div class="form-group-reply"> 
+                                <textarea name="replytxt" id="bodytxt" msg cols="20" rows="2" class="form-control" style="background-color: white;"></textarea>
+                                {% csrf_token %}
+                            </div>
+                            <div class="form-group-reply"> <button type="submit" id="post" class="btn">Reply</button> </div>
+                            </form>
+                            </li>
+
+                            </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-4 offset-md-1 offset-sm-1 col-12 mt-4">
+                <form action="./{{game.id}}/post_comment" method="post" id="algin-form">
+                    <div class="form-group"> 
+                        <h4>Leave a comment</h4> <label for="message">Message</label> 
+                        <textarea name="bodytxt" id="bodytxt" msg cols="30" rows="5" class="form-control" style="background-color: white;"></textarea>
+                        {% csrf_token %}
+                    </div>
+                    <div class="form-group"> <button type="submit" id="post" class="btn">Post Comment</button> </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% comment %} 
+             <div class="card-body">
+                <h3>Leave a comment</h3>
+                <form method="post" style="margin-top: 1.3em;">
+                    <label for="bodytxt">comments:</label><br>
+                    <textarea name="bodytxt" cols="40" rows="10" required="" id="bodytxt"></textarea>
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+                </form>
+            </div> {% endcomment %}
+
+        {% else %}
+            <li><a href="{% url 'login' %}">login to make a bet</a></li>
+        {% endif %}
+    {% endif %}
+    </div>
+    
+
+    
+</body>
+
+<script> 
+$(".header").click(function () {
+    $header = $(this);
+    //getting the next element
+    $content = $header.next();
+    //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+    $content.slideToggle(500, function () {
+        //execute this after slideToggle is done
+        //change text of header based on visibility of content div
+        $header.text(function () {
+            //change text based on condition
+            return $content.is(":visible") ? "fold replies" : "show replies";
+        });
+    });
+});
+</script>
+
+
+
+<script>
+
+    var form = document.querySelector('form');
+    form.addEventListener('change', async function() {
+        var cost;
+        var data = $('form').serializeArray().reduce(function (obj, item) {
+                    obj[item.name] = item.value;
+                    return obj;
+                    }, {});
+        var csTokenAbi_string = "{{csTokenAbi | safe}}".replace(/'/g, '"');
+        csTokenAbi_string = csTokenAbi_string.replaceAll('True', 'true')
+        csTokenAbi_string = csTokenAbi_string.replaceAll('False', 'false')
+        var csTokenAbi = JSON.parse(csTokenAbi_string);
+        const csTokenAddress = "{{csTokenAddress | safe}}";
+
+        var marketAbi_string = "{{marketAbi | safe}}".replace(/'/g, '"');
+        marketAbi_string = marketAbi_string.replaceAll('True', 'true')
+        marketAbi_string = marketAbi_string.replaceAll('False', 'false')
+        var marketAbi = JSON.parse(marketAbi_string);
+        const marketAddress = "{{marketAddress | safe}}";
+
+        let provider;
+        window.ethereum.enable().then(
+            provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+        );
+        const signer = provider.getSigner();
+        const marketContract = new ethers.Contract(marketAddress, marketAbi, provider);
+        const mktWithSigner = marketContract.connect(signer);
+        var option = data['option'];
+        var team = data['team'];
+        var amount = data['amount'];
+        var amount_modified = amount;
+
+        if (option == 'Sell') {
+            amount_modified = '-' + amount;
+        }
+
+        var outcomeTokenAmounts = [0, 0];
+        outcomeTokenAmounts[team] = amount_modified;
+        cost = await mktWithSigner.calcNetCost(outcomeTokenAmounts);
+        let str;
+        if (option == 'Sell') {
+            str = "Current Profit: " + Math.abs(cost) + " CST unit";
+        } else {
+            str = "Current Cost: " + cost + " CST unit";
+        }
+        document.getElementById("demo_price").innerHTML = str;
+    });
+    setInterval(update_market_price, 15000); // refresh every 15 seconds
+    setInterval(update_market_position, 15000); // refresh every 15 seconds
+
+    async function market_set_approval() {
+        if (typeof web3 !== 'undefined') {
+            loggedIn = checkWeb3();
+            if (!loggedIn) {
+                alert("Please unlock your web3 provider (probably, Metamask)");
+            } else {
+
+                var condtionalTokenAbi_string = "{{conditionalTokensAbi | safe}}".replace(/'/g, '"');
+                condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('True', 'true');
+                condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('False', 'false');
+
+                console.log(condtionalTokenAbi_string)
+
+                var conditionalTokenAbi = JSON.parse(condtionalTokenAbi_string);
+                const conditionalTokenAddress = "{{conditionalTokensAddress | safe}}";
+                
+                let provider;
+                window.ethereum.enable().then(
+                    provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+                );
+                const signer = provider.getSigner();
+
+                const marketAddress = "{{marketAddress | safe}}";
+                const conditionWithSigner = new ethers.Contract(conditionalTokenAddress, conditionalTokenAbi, signer);
+
+                var owner_address = await signer.getAddress();
+
+                var n = await conditionWithSigner.setApprovalForAll(marketAddress, true);
+
+                console.log(n);
+
+                var success = 1;
+                var success_url = 'https://prediction-market-322017.ue.r.appspot.com/beofore_sell_complete/';
+                var request = new XMLHttpRequest();
+                if (success == 1) {
+                    request.open('POST', success_url, true);
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    var formData = 'game=' + game;
+                    request.send(formData)
+                }
+
+                window.location.reload();
+            }
+        } else {
+            alert('web3 missing');
+        }
+    };
+
+    async function get_allowance() {
+        if (typeof web3 !== 'undefined') {
+            loggedIn = checkWeb3();
+            if (!loggedIn) {
+                alert("Please unlock your web3 provider (probably, Metamask)");
+            } else {
+
+                var loc = window.location.pathname;
+                var dir = loc.substring(0, loc.lastIndexOf('/'));
+                console.log(dir);
+                var abi_string = "{{csTokenAbi | safe}}".replace(/'/g, '"');
+                abi_string = abi_string.replaceAll('True', 'true')
+                abi_string = abi_string.replaceAll('False', 'false')
+                var abi = JSON.parse(abi_string);
+
+                let provider;
+                window.ethereum.enable().then(
+                    provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+                );
+                const signer = provider.getSigner();
+                const csTokenAddress = "{{csTokenAddress | safe}}";
+
+                const marketAddress = "{{marketAddress | safe}}";
+                const cstWithSigner = new ethers.Contract(csTokenAddress, abi, signer);
+
+                var owner_address = await signer.getAddress()
+                console.log(owner_address)
+                console.log(marketAddress)
+                console.log(cstWithSigner)
+
+                var n = await cstWithSigner.allowance(owner_address, marketAddress)
+                console.log(n)
+                console.log('checked allowance')
+
+
+                const allowed_amount = ethers.utils.parseUnits('1', 18);
+
+                var options = {
+                    gasLimit: 5000000,
+                    gasPrice: ethers.utils.parseUnits('1', 'gwei'),
+                };
+
+                
+                tx = await cstWithSigner.approve(marketAddress, allowed_amount, options);
+                await tx.wait();
+                
+                var success = 1;
+                var game = {{game.id}};
+                var success_url = 'http://127.0.0.1:8000/beofore_buy_complete/';
+                var success_url = 'https://prediction-market-322017.ue.r.appspot.com/beofore_buy_complete/';
+                var request = new XMLHttpRequest();
+                if (success == 1) {
+                    request.open('POST', success_url, true);
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    var formData = 'game=' + game;
+                    request.send(formData)
+                }
+
+                window.location.reload();
+            }
+        } else {
+            alert('web3 missing');
+        }
+    };
+
+    async function trade() {
+        if (typeof web3 !== 'undefined') {
+            loggedIn = checkWeb3();
+            if (!loggedIn) {
+                alert("Please unlock your web3 provider (probably, Metamask)");
+            } else {
+                var data = $('form').serializeArray().reduce(function (obj, item) {
+                    obj[item.name] = item.value;
+                    return obj;
+                }, {});
+
+                console.log(data)
+                
+                var csTokenAbi_string = "{{csTokenAbi | safe}}".replace(/'/g, '"');
+                csTokenAbi_string = csTokenAbi_string.replaceAll('True', 'true')
+                csTokenAbi_string = csTokenAbi_string.replaceAll('False', 'false')
+                var csTokenAbi = JSON.parse(csTokenAbi_string);
+                const csTokenAddress = "{{csTokenAddress | safe}}";
+
+                var marketAbi_string = "{{marketAbi | safe}}".replace(/'/g, '"');
+                marketAbi_string = marketAbi_string.replaceAll('True', 'true')
+                marketAbi_string = marketAbi_string.replaceAll('False', 'false')
+                var marketAbi = JSON.parse(marketAbi_string);
+                const marketAddress = "{{marketAddress | safe}}";
+
+                let provider;
+                window.ethereum.enable().then(
+                    provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+                );
+                const signer = provider.getSigner();
+                const csTokenContract = new ethers.Contract(csTokenAddress, csTokenAbi, provider);
+                const marketContract = new ethers.Contract(marketAddress, marketAbi, provider);
+                const cstWithSigner = csTokenContract.connect(signer);
+                const mktWithSigner = marketContract.connect(signer);
+
+                var game = {{game.id}};
+                var option = data['option'];
+                var team = data['team'];
+                var amount = data['amount'];
+                var down = data['estimate_low']
+                var up = data['estimate_high']
+                var amount_modified = amount;
+
+                if (option == 'Sell') {
+                    amount_modified = '-' + amount;
+                }
+
+                var outcomeTokenAmounts = [0, 0];
+                outcomeTokenAmounts[team] = amount_modified;
+
+                console.log(outcomeTokenAmounts)
+
+                var net_cost = await mktWithSigner.calcNetCost(outcomeTokenAmounts);
+
+                if (option == 'Sell') {
+                    cost = net_cost.mul(-1);
+                } else {
+                    cost = net_cost;
+                };
+                
+                var options = {
+                    gasLimit: 8000000,
+                    gasPrice: ethers.utils.parseUnits('1.5', 'gwei')
+                };
+                home_price = await mktWithSigner.calcMarginalPrice(0);
+                home_price = home_price / Math.pow(2, 64)
+                mp = home_price.toFixed(4)
+
+                tx = await mktWithSigner.trade(outcomeTokenAmounts, cost);
+
+                
+
+                var success_url = 'https://prediction-market-322017.ue.r.appspot.com/save_trade/';
+                var request = new XMLHttpRequest();
+                request.open('POST', success_url, true);
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                var formData = 'game=' + game + '&option=' + option + '&team=' + team + '&amount=' + amount + '&mp=' + mp + '&up=' + up + '&down=' + down + '&tx=' + tx.hash; 
+                console.log(formData);
+                request.send(formData);
+                
+            }
+        } else {
+            alert('web3 missing');
+        }
+    };
+
+    async function redeem() {
+        if (typeof web3 !== 'undefined') {
+            loggedIn = checkWeb3();
+            if (!loggedIn) {
+                alert("Please unlock your web3 provider (probably, Metamask)");
+            } else {
+                var condtionalTokenAbi_string = "{{conditionalTokensAbi | safe}}".replace(/'/g, '"');
+                condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('True', 'true');
+                condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('False', 'false');
+                var conditionalTokenAbi = JSON.parse(condtionalTokenAbi_string);
+                const conditionalTokenAddress = "{{conditionalTokensAddress | safe}}";
+                const csTokenAddress = "{{csTokenAddress | safe}}";
+                const marketConditionId = '{{marketConditionId | safe}}';
+                let provider;
+                window.ethereum.enable().then(
+                    provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+                );
+                const signer = provider.getSigner();
+                const csdtWithSigner = new ethers.Contract(conditionalTokenAddress, conditionalTokenAbi, signer);
+
+                const parentCollectionId = '0x0000000000000000000000000000000000000000000000000000000000000000';
+                const indexSets = [1, 2];
+
+                tx = await csdtWithSigner.redeemPositions(csTokenAddress, parentCollectionId, marketConditionId, indexSets)
+                await tx.wait();
+
+                console.log(tx);
+
+                var success = 1;
+                var game = {{game.id}};
+                var success_url = 'https://prediction-market-322017.ue.r.appspot.com/redeem_success/';
+                var request = new XMLHttpRequest();
+                if (success == 1) {
+                    request.open('POST', success_url, true);
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    var formData = 'game=' + game;
+                    request.send(formData)
+                }
+
+                window.location.reload();
+            }
+        } else {
+            alert('web3 missing');
+        }
+    };
+
+    async function update_market_price() {
+        var home_position;
+        var away_position;
+        {% comment %} var condtionalTokenAbi_string = "{{conditionalTokensAbi | safe}}".replace(/'/g, '"');
+        condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('True', 'true');
+        condtionalTokenAbi_string = condtionalTokenAbi_string.replaceAll('False', 'false');
+        var conditionalTokenAbi = JSON.parse(condtionalTokenAbi_string);
+        const conditionalTokenAddress = "{{conditionalTokensAddress | safe}}";
+        let provider;
+        window.ethereum.enable().then(
+            provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+        );
+        const signer = provider.getSigner();
+        const csdtWithSigner = new ethers.Contract(conditionalTokenAddress, conditionalTokenAbi, signer);
+
+        home_position = await csdtWithSigner.balanceOf(positionIdLo);
+        away_position = await csdtWithSigner.balanceOf(positionIdHi);
+        document.getElementById("home_position").innerHTML = home_position;
+        document.getElementById("away_position").innerHTML = away_position; {% endcomment %}
+    };
+
+    async function update_market_position() {
+        var home_price;
+        var away_price;
+        var marketAbi_string = "{{marketAbi | safe}}".replace(/'/g, '"');
+        marketAbi_string = marketAbi_string.replaceAll('True', 'true')
+        marketAbi_string = marketAbi_string.replaceAll('False', 'false')
+        var marketAbi = JSON.parse(marketAbi_string);
+        const marketAddress = "{{marketAddress | safe}}";
+
+        let provider;
+        window.ethereum.enable().then(
+            provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+        );
+        const signer = provider.getSigner();
+        const marketContract = new ethers.Contract(marketAddress, marketAbi, provider);
+        const mktWithSigner = marketContract.connect(signer);
+        home_price = await mktWithSigner.calcMarginalPrice(0);
+        away_price = await mktWithSigner.calcMarginalPrice(1);
+        home_price = home_price / Math.pow(2, 64)
+        away_price = away_price / Math.pow(2, 64)
+        document.getElementById("home_price").innerHTML = home_price.toFixed(4);
+        document.getElementById("away_price").innerHTML = away_price.toFixed(4);
+    };
+
+</script>
+<script>
+
+    const data = {
+    labels: {{ pie_labels|safe}},
+    datasets: [{
+        label: 'My First Dataset',
+        data: {{pie_data|safe}},
+        backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        ],
+        hoverOffset: 4
+    }]
+    };
+
+    const config = {
+    type: 'doughnut',
+    data: data,
+    };
+
+    var myChart = new Chart(
+            document.getElementById('pie-chart'),
+            config
+        );
+
+    const data2 = {
+    labels: {{ pie_labels|safe}},
+    datasets: [{
+        label: 'my position',
+        data: {{position_data|safe}},
+        backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        ],
+        hoverOffset: 4
+    }]
+    };
+
+    const config2 = {
+    type: 'doughnut',
+    data: data2,
+    };
+
+    var myChart2 = new Chart(
+            document.getElementById('position-chart'),
+            config2
+    );
+</script>
+
+<script>
+
+anychart.onDocumentReady(function() {
+    var data = {{historical_price | safe}};
+    var dataTable = anychart.data.table('x');
+    dataTable.addData(data);
+    var mapping = dataTable.mapAs({x: 'x', value: 'value'});
+    var chart = anychart.stock();
+    var series = chart.plot(0).line(mapping);
+    series.legendItem().iconType('risingfalling');
+    chart.container('historical_price');
+    chart.draw();
+});
+</script>
+
+
+
+{% endblock %}

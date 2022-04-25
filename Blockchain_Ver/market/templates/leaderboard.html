@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+{% endblock %}
+
+{% block content %}
+<body class="w3-content" style="max-width:1300px">
+  
+<div class="w3-col" style="height:700px">
+<div class="w3-padding-64 w3-center">
+<h1> Columbia Leaderboard </h1>
+<table id="sporttable" class="display">
+    <thead>
+        <tr> 
+            <th> User </th>
+            <th> CST Units </th>
+            <th> UPS </th>
+            <th> DOWNS </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for l in sportleaders %}
+        <tr>
+            <td>{{ l.0 }}</td>
+            <td>{{ l.1 }}</td>
+            <td>{{ l.2 }}</td>
+            <td>{{ l.3 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+
+
+<div class="w3-col" style="height:700px">
+<div class="w3-padding-64 w3-center">
+<h1> Blockchain Class Competition </h1>
+<table id="blocktable" class="display">
+    <thead>
+        <tr> 
+            <th> User </th>
+            <th> CST Units </th>
+            <th> UPS</th>
+            <th> DOWNS</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for l in blockleaders %}
+        <tr>
+            <td>{{ l.0 }}</td>
+            <td>{{ l.1 }}</td>
+            <td>{{ l.2 }}</td>
+            <td>{{ l.3 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+  </div>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#blocktable').dataTable();
+});
+
+$(document).ready(function(){
+    $('#sporttable').dataTable();
+});
+</script>
+
+{% endblock %}

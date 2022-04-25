@@ -1,0 +1,12 @@
+{% extends 'web3auth/base.html' %}
+{% block content %}
+  <h1> Please use your Metamask address as your username</h1>
+  <h1> Your First name will be used in the leaderboard</h1>
+  <div class="row m-t-2">
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+{% endblock content %}

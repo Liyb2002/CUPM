@@ -1,0 +1,187 @@
+{
+    "abi": [
+        {
+            "inputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "initialFunding",
+                    "type": "uint256"
+                }
+            ],
+            "name": "AMMCreated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "clone",
+                    "type": "address"
+                }
+            ],
+            "name": "CloneCreated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "creator",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "contract LMSRMarketMaker",
+                    "name": "lmsrMarketMaker",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "contract ConditionalTokens",
+                    "name": "pmSystem",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "contract IERC20",
+                    "name": "collateralToken",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "bytes32[]",
+                    "name": "conditionIds",
+                    "type": "bytes32[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint64",
+                    "name": "fee",
+                    "type": "uint64"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "funding",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LMSRMarketMakerCreation",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "OwnershipTransferred",
+            "type": "event"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "implementationMaster",
+            "outputs": [
+                {
+                    "internalType": "contract LMSRMarketMaker",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "internalType": "bytes",
+                    "name": "consData",
+                    "type": "bytes"
+                }
+            ],
+            "name": "cloneConstructor",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "internalType": "contract ConditionalTokens",
+                    "name": "pmSystem",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract IERC20",
+                    "name": "collateralToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes32[]",
+                    "name": "conditionIds",
+                    "type": "bytes32[]"
+                },
+                {
+                    "internalType": "uint64",
+                    "name": "fee",
+                    "type": "uint64"
+                },
+                {
+                    "internalType": "contract Whitelist",
+                    "name": "whitelist",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "funding",
+                    "type": "uint256"
+                }
+            ],
+            "name": "createLMSRMarketMaker",
+            "outputs": [
+                {
+                    "internalType": "contract LMSRMarketMaker",
+                    "name": "lmsrMarketMaker",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "contract_address": "0xa764Aac78C3e267F1f0Be044c59CBa4832E313f1"
+}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-column-gap: 50px;
+}
+
+.grid-item {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 40px;
+  text-align: center;
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<body class="w3-content" style="max-width:1300px">
+
+<!-- First Grid: Logo & About -->
+  
+<div class="grid-container">
+{% if user.is_authenticated %}
+  {% if all_sport %}
+    {% for sport in all_sport %}
+      <div class="grid-item"><li><a href="./{{sport.sport_name}}">{{ sport.sport_name }}</a></li></div>
+    {% endfor %}
+  {% else %}
+      <p>No market available.</p>
+  {% endif %}
+{% else %}
+<div class="w3-padding-64">
+  <h1>Please login to check</h1>
+  <h1>OR  </li> <a href="{% url 'web3auth_signup' %}">Sign Up</a></li> here </h1>
+</div>
+{% endif %}
+</div>
+
+
+
+
+
+{% endblock %}
